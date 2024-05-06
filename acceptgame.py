@@ -2,6 +2,7 @@ import pyautogui
 import time
 
 global button_found
+global hero_found
 
 def click_accept_button(image_paths):
     global button_found
@@ -26,13 +27,13 @@ def click_accept_button(image_paths):
         print("Button not found. Retrying...")
         time.sleep(2)
 
-def auto_pick():
-    
-    button_found = True
+def find_hero():
+    hero_found = False       
     try:
-        print('Looking for hero.')
-        hero_found = False
-        while not hero_found:
+        if button_found is True:
+          print('Looking for hero.')
+          hero_found = False
+          while not hero_found:
             if button_found is True:
                 print('Picking Phantom Assassin')
                 pick_hero_location = pyautogui.locateOnScreen('PA.png', minSearchTime=100000, confidence=0.7)
@@ -47,7 +48,29 @@ def auto_pick():
         print("Hero not found. Retrying...")
         time.sleep(2)
 
+def pick_hero():
+    try:
+        if hero_found is True:
+            print('Picking hero..')
+            hero_picked = False
+            while not hero_picked:
+                print('Selecting hero')
+                lock_hero_location = pyautogui.locateOnScreen('PA.png', minSearchTime=10000, confidence=0.7)
+                if lock_hero_location is not None:
+                    print('Hero locked')
+                    lock_hero_center = pyautogui.center(lock_hero_location)
+                    pyautogui.click(lock_hero_center)
+                    print("Done")
+                    hero_picked = True
+    except pyautogui.ImageNotFoundException:
+        print("Hero not picked. Retrying... ")
+        time.sleep(2)
+        
+    
+    
+
+
 image_paths = ['play.png', 'wtf.png', 'test2.png']  # trying to iterate images
 
 # click_accept_button(image_paths)
-auto_pick()
+find_hero()
