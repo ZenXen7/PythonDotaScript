@@ -1,76 +1,98 @@
 import pyautogui
+import json
 import time
 
-global button_found
-global hero_found
+game_found = False
+hero_picked = False
 
-def click_accept_button(image_paths):
-    global button_found
-    try:
-        print('Looking for button.')
-        button_found = False
-        while not button_found:
-            for image_path in image_paths:
-                accept_button_location = pyautogui.locateOnScreen('test2.png', minSearchTime=100000, confidence=0.7)
-                if accept_button_location is not None:
-                    print("Button found!")
-                    accept_button_center = pyautogui.center(accept_button_location)
-                    pyautogui.click(accept_button_center)
-                    print("Match accepted! Exiting....")
-                    button_found = True
-                    break  
-            if not button_found:
-                print("Button not found. Retrying...")
-                time.sleep(2)
 
-    except pyautogui.ImageNotFoundException:
-        print("Button not found. Retrying...")
-        time.sleep(2)
+def start_game():
+    global game_found
+    print('Starting game..')
+    image_path = 'playbutton.png'
+    end_time = time.time() + 10
+    
+    while time.time() < end_time:
+        try:
+            location = pyautogui.locateOnScreen(image_path, confidence=0.7)
+            if location is not None:
+                print('Game started')
+                center = pyautogui.center(location)
+                pyautogui.doubleClick(center)
+                pyautogui.doubleClick(center)
+                accept_game()
+                # if game_found is True:
+                #     pick_selected()
+                #     return
+                return
+            else:
+                print('Image not found, retrying...')
+                time.sleep(1)
+        except Exception as e:
+            print(f'Scanning..: {e}')
+            time.sleep(1)
+    
+    print('Failed to find the image within the time limit.')
 
-def find_hero():
-    hero_found = False       
-    try:
-        if button_found is True:
-          print('Looking for hero.')
-          hero_found = False
-          while not hero_found:
-            if button_found is True:
-                print('Picking Phantom Assassin')
-                pick_hero_location = pyautogui.locateOnScreen('PA.png', minSearchTime=100000, confidence=0.7)
-                if pick_hero_location is not None:
-                    print('Hero found!')
-                    pick_hero_center = pyautogui.center(pick_hero_location)
-                    pyautogui.click(pick_hero_center)
-                    print("PA Picked")
-                    hero_found = True
-                    
-    except pyautogui.ImageNotFoundException:
-        print("Hero not found. Retrying...")
-        time.sleep(2)
-
-def pick_hero():
-    try:
-        if hero_found is True:
-            print('Picking hero..')
-            hero_picked = False
-            while not hero_picked:
-                print('Selecting hero')
-                lock_hero_location = pyautogui.locateOnScreen('PA.png', minSearchTime=10000, confidence=0.7)
-                if lock_hero_location is not None:
-                    print('Hero locked')
-                    lock_hero_center = pyautogui.center(lock_hero_location)
-                    pyautogui.click(lock_hero_center)
-                    print("Done")
-                    hero_picked = True
-    except pyautogui.ImageNotFoundException:
-        print("Hero not picked. Retrying... ")
-        time.sleep(2)
+def accept_game():
+    global game_found
+    print('Waiting to accept game...')
+    accept_button = 'Accept.png'
+    start_time = time.time()
+    
+    while True:
+        try:
+            accept_location = pyautogui.locateOnScreen(accept_button, confidence=0.6)
+            if accept_location is not None:
+                print('Game accepted')
+                center = pyautogui.center(accept_location)
+                pyautogui.doubleClick(center)
+                pyautogui.doubleClick(center)
+                pyautogui.doubleClick(center)
+                game_found = True
+                return
+            else:
+                print('Accept button not found, retrying...')
+                time.sleep(1)
+        except Exception as e:
+            print(f'Scanning... {e}')
+            time.sleep(1)
         
+       
+        if time.time() - start_time > 600: 
+            print('Failed to accept within 10 minutes or game not found.')
+            break
+
+
+def pick_selected():
+    global hero_picked
+    hero_portrait = 'test.png'
+    pick_time = time.time() + 10
+    
+    if game_found:  
+        while time.time() < pick_time:
+            try:
+                hero_location = pyautogui.locateOnScreen(hero_portrait, confidence=0.6)
+                if hero_location is not None:
+                    hero_center = pyautogui.center(hero_location)
+                    pyautogui.doubleClick(hero_center)
+                    pyautogui.doubleClick(hero_center)
+                    hero_picked = True
+                    print('Hero picked successfully')
+                    return
+                else:
+                    print('Hero possibly banned or not found, retrying...')
+                    time.sleep(1)
+            except Exception as e:
+                print(f'Scanning... {e}')
+                time.sleep(1)
+                
+    print('Failed to pick hero.')
     
     
+    
+start_game()
+print('Game found:', game_found)
 
 
-image_paths = ['play.png', 'wtf.png', 'test2.png']  # trying to iterate images
-
-# click_accept_button(image_paths)
-find_hero()
+# WoRKIng version

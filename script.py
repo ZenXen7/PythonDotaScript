@@ -4,7 +4,7 @@ import time
 
 def main():
     while True:
-        pyautogui.typewrite("Nigger")
+        pyautogui.typewrite("hello world")
         pyautogui.hotkey("enter")
         
         if keyboard.is_pressed('x'):

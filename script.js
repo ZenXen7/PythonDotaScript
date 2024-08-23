@@ -14,9 +14,9 @@ require('dotenv').config();
 
 const maliciousPayload = {
     id: "69",
-    username: "niggerr",
-    message: "nigger",
-    date: "nigger"
+    username: "meow",
+    message: "meow",
+    date: "nigga"
 };
 
 const url = 'https://messaging-board-backend.vercel.app/chat'; 
@@ -25,7 +25,7 @@ const url = 'https://messaging-board-backend.vercel.app/chat';
 
 
 
-function Troll(){
+function Troll(){s
   fetch(url, {
     method: 'POST',
     headers: {
