@@ -5,6 +5,8 @@ import time
 game_found = False
 hero_picked = False
 
+# Backup hero image
+backup_hero_portrait = 'backup.png'  # Path to the backup hero image
 
 def start_game():
     global game_found
@@ -21,9 +23,6 @@ def start_game():
                 pyautogui.doubleClick(center)
                 pyautogui.doubleClick(center)
                 accept_game()
-                # if game_found is True:
-                #     pick_selected()
-                #     return
                 return
             else:
                 print('Image not found, retrying...')
@@ -58,7 +57,6 @@ def accept_game():
             print(f'Scanning... {e}')
             time.sleep(1)
         
-       
         if time.time() - start_time > 600: 
             print('Failed to accept within 10 minutes or game not found.')
             break
@@ -78,21 +76,35 @@ def pick_selected():
                     pyautogui.doubleClick(hero_center)
                     pyautogui.doubleClick(hero_center)
                     hero_picked = True
-                    print('Hero picked successfully')
+                    print('Primary hero picked successfully')
                     return
                 else:
-                    print('Hero possibly banned or not found, retrying...')
+                    print('Primary hero possibly banned or not found, retrying...')
+                    time.sleep(1)
+            except Exception as e:
+                print(f'Scanning... {e}')
+                time.sleep(1)
+
+        # If primary hero wasn't picked, try the backup hero
+        print('Trying to pick backup hero...')
+        while time.time() < pick_time:
+            try:
+                backup_hero_location = pyautogui.locateOnScreen(backup_hero_portrait, confidence=0.6)
+                if backup_hero_location is not None:
+                    backup_hero_center = pyautogui.center(backup_hero_location)
+                    pyautogui.doubleClick(backup_hero_center)
+                    pyautogui.doubleClick(backup_hero_center)
+                    hero_picked = True
+                    print('Backup hero picked successfully')
+                    return
+                else:
+                    print('Backup hero also not found, retrying...')
                     time.sleep(1)
             except Exception as e:
                 print(f'Scanning... {e}')
                 time.sleep(1)
                 
-    print('Failed to pick hero.')
-    
-    
+    print('Failed to pick any hero.')
     
 start_game()
 print('Game found:', game_found)
-
-
-# WoRKIng version
